@@ -1,6 +1,6 @@
 """ ======================================================================
 
-    Python Code:    [X360] Rumble Roses XX (for Blender 3.0.1)
+    Python Code:    [X360] Rumble Roses XX (for Blender 3.4.1)
     Author:         mariokart64n
     Date:           February 19, 2022
     Version:        0.1
@@ -9,7 +9,11 @@
 
 
     ChangeLog:
-
+    2023-01-05
+        removed bail out when number of material id's mismatch the polygone
+        count. I probably made a mistake some where else, this is just a 
+        quick fix.
+    
     2022-02-19
         Script Written
 
@@ -1736,14 +1740,13 @@ def mesh(
                 obj.material_slots[0].material = materials[i]
         # obj.active_material = obj.material_slots[i].material
 
-    if len(materialIDs) == len(obj.data.polygons):
-        for i in range(0, len(materialIDs)):
-            obj.data.polygons[i].material_index = materialIDs[i]
-            if materialIDs[i] > len(materialIDs):
-                materialIDs[i] = materialIDs[i] % len(materialIDs)
-            
-    elif len(materialIDs) > 0:
-        print("Error:\tMaterial Index Out of Range")
+
+    for i in range(0, len(obj.data.polygons)):
+        if i < len(materialIDs):
+            obj.data.polygons[i].material_index = materialIDs[i] % len(materialIDs)
+            #if materialIDs[i] > len(materialIDs):
+            #    materialIDs[i] = materialIDs[i] % len(materialIDs)
+
 
     # obj.data.materials.append(material)
     layer.objects.link(obj)
@@ -2233,6 +2236,7 @@ def read(file="", armName="Armature", mscale=0.1):
             for m in range(0, yobj.objs[o].element_count):
                 max_face_count += int(yobj.objs[o].mesh[m].faces_count / 3)
         
+        
         if (max_face_count > 0):
             vfaces = [[int] * 3] * max_face_count
             matids = [int] * max_face_count
@@ -2270,12 +2274,15 @@ def read(file="", armName="Armature", mscale=0.1):
         invNode = None
         gmaMap = None
         rgbMap = None
+        
         for o in range(0, yobj.mat_count):
 
             # make material
             mat_name = "mat_" + str(o)
             if o < len(mesh_names):
                 mat_name = mesh_names[o]
+            
+            
             
             #Create Material
             mats[o] = StandardMaterial(mat_name)
@@ -2512,7 +2519,7 @@ class ImportHelper_wrapper1(bpy.types.Operator):
     filename: bpy.props.StringProperty(subtype="FILE_NAME")  # name of selected item
     directory: bpy.props.StringProperty(subtype="FILE_PATH")  # directory of the selected item
     files: bpy.props.CollectionProperty(
-        type=bpy.types.OperatorFileListElement)  # a collection containing all the selected items�f filenames
+        type=bpy.types.OperatorFileListElement)  # a collection containing all the selected items f filenames
 
     # Controls
     #my_int1: bpy.props.IntProperty(name="Some Integer", description="Tooltip")
@@ -2766,7 +2773,7 @@ if __name__ == "__main__":
 
         deleteScene(['MESH', 'ARMATURE'])  # Clear Scene
         read (
-            "C:\\Users\\Corey\\Downloads\\rrxx\\0000_Reiko\\0.YOBJ"
+            "E:\\BackUp\\TREKSTOR\\_3DMODELS\\Ripped\\Rumble Roses XX\\ch\\ch0000\\0100\\63.YOBJ"
             )
         messageBox("Done!")
     else:
