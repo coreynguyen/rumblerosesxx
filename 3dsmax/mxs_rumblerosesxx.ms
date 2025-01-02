@@ -1,6 +1,6 @@
 -- MaxScript:    Imports Mesh From Rumble Roses XX
 -- Written by:   Corey Nguyen
-237-- Release Date: January 1, 2024
+-- Release Date: January 1, 2024
 
 gc()
 clearlistener()
